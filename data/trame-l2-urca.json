@@ -1,0 +1,256 @@
+{
+  "schema": "cockpit-l2",
+  "version": 2,
+  "genereLe": "2026-08-23T14:03:43",
+  "_note": "Trame de départ. Structure confirmée pour la licence d'économie de l'URCA : 5 UE de 6 ECTS par semestre, soit 30 ECTS. Les intitulés sont ceux du tronc commun standard de L2 et doivent être corrigés sur la maquette officielle. Coefficients posés à 1 pour le contrôle continu et 2 pour le partiel : à vérifier UE par UE. Aucune date n'a été inventée — c'est la seule chose à saisir impérativement.",
+  "semestreActif": "s3",
+  "_etat": {
+    "version": 2,
+    "semestres": [
+      {
+        "id": "s3",
+        "nom": "Semestre 3",
+        "ues": [
+          {
+            "id": "sa485hd",
+            "nom": "Microéconomie",
+            "ects": 6,
+            "cible": 14,
+            "nature": "mixte",
+            "evals": [
+              {
+                "id": "y3h9vxd",
+                "nom": "Contrôle continu",
+                "coef": 1,
+                "note": null,
+                "date": null
+              },
+              {
+                "id": "l2fzt3a",
+                "nom": "Partiel",
+                "coef": 2,
+                "note": null,
+                "date": null
+              }
+            ]
+          },
+          {
+            "id": "bjtnd4x",
+            "nom": "Macroéconomie",
+            "ects": 6,
+            "cible": 14,
+            "nature": "mixte",
+            "evals": [
+              {
+                "id": "32cb37u",
+                "nom": "Contrôle continu",
+                "coef": 1,
+                "note": null,
+                "date": null
+              },
+              {
+                "id": "st8ghyu",
+                "nom": "Partiel",
+                "coef": 2,
+                "note": null,
+                "date": null
+              }
+            ]
+          },
+          {
+            "id": "3au2m8k",
+            "nom": "Statistiques et probabilités",
+            "ects": 6,
+            "cible": 15,
+            "nature": "quanti",
+            "evals": [
+              {
+                "id": "qvilh7w",
+                "nom": "Contrôle continu",
+                "coef": 1,
+                "note": null,
+                "date": null
+              },
+              {
+                "id": "a6ixsst",
+                "nom": "Partiel",
+                "coef": 2,
+                "note": null,
+                "date": null
+              }
+            ]
+          },
+          {
+            "id": "6j354qs",
+            "nom": "Mathématiques appliquées à l'économie",
+            "ects": 6,
+            "cible": 15,
+            "nature": "quanti",
+            "evals": [
+              {
+                "id": "awev4ja",
+                "nom": "Contrôle continu",
+                "coef": 1,
+                "note": null,
+                "date": null
+              },
+              {
+                "id": "uxbn3wc",
+                "nom": "Partiel",
+                "coef": 2,
+                "note": null,
+                "date": null
+              }
+            ]
+          },
+          {
+            "id": "t1y4eub",
+            "nom": "Comptabilité et gestion",
+            "ects": 6,
+            "cible": 14,
+            "nature": "mixte",
+            "evals": [
+              {
+                "id": "49c67bj",
+                "nom": "Contrôle continu",
+                "coef": 1,
+                "note": null,
+                "date": null
+              },
+              {
+                "id": "b1l5m17",
+                "nom": "Partiel",
+                "coef": 2,
+                "note": null,
+                "date": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "s4",
+        "nom": "Semestre 4",
+        "ues": [
+          {
+            "id": "qz85vzo",
+            "nom": "Microéconomie 2",
+            "ects": 6,
+            "cible": 14,
+            "nature": "mixte",
+            "evals": [
+              {
+                "id": "pvuuuoe",
+                "nom": "Contrôle continu",
+                "coef": 1,
+                "note": null,
+                "date": null
+              },
+              {
+                "id": "ychd004",
+                "nom": "Partiel",
+                "coef": 2,
+                "note": null,
+                "date": null
+              }
+            ]
+          },
+          {
+            "id": "rgat2fc",
+            "nom": "Macroéconomie 2 — économie ouverte",
+            "ects": 6,
+            "cible": 14,
+            "nature": "mixte",
+            "evals": [
+              {
+                "id": "u0t1h3g",
+                "nom": "Contrôle continu",
+                "coef": 1,
+                "note": null,
+                "date": null
+              },
+              {
+                "id": "yqg8qnu",
+                "nom": "Partiel",
+                "coef": 2,
+                "note": null,
+                "date": null
+              }
+            ]
+          },
+          {
+            "id": "jo2veap",
+            "nom": "Statistique inférentielle et économétrie",
+            "ects": 6,
+            "cible": 15,
+            "nature": "quanti",
+            "evals": [
+              {
+                "id": "n8xtldu",
+                "nom": "Contrôle continu",
+                "coef": 1,
+                "note": null,
+                "date": null
+              },
+              {
+                "id": "lj3y5o4",
+                "nom": "Partiel",
+                "coef": 2,
+                "note": null,
+                "date": null
+              }
+            ]
+          },
+          {
+            "id": "t43o25p",
+            "nom": "Économie monétaire et financière",
+            "ects": 6,
+            "cible": 14,
+            "nature": "mixte",
+            "evals": [
+              {
+                "id": "kv7f7cj",
+                "nom": "Contrôle continu",
+                "coef": 1,
+                "note": null,
+                "date": null
+              },
+              {
+                "id": "2wecxh9",
+                "nom": "Partiel",
+                "coef": 2,
+                "note": null,
+                "date": null
+              }
+            ]
+          },
+          {
+            "id": "7062h6a",
+            "nom": "Histoire de la pensée économique, droit et langues",
+            "ects": 6,
+            "cible": 14,
+            "nature": "redac",
+            "evals": [
+              {
+                "id": "pepwefr",
+                "nom": "Contrôle continu",
+                "coef": 1,
+                "note": null,
+                "date": null
+              },
+              {
+                "id": "xbg0vlw",
+                "nom": "Partiel",
+                "coef": 2,
+                "note": null,
+                "date": null
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "seances": [],
+    "actif": "s3"
+  }
+}

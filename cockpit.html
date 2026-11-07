@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cockpit L2</title>
+<meta name="theme-color" content="#101B2D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="L2">
+<link rel="apple-touch-icon" href="icone-180.png">
+<link rel="icon" href="icone-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --encre:#101B2D; --encre2:#18263D; --encre3:#22334E; --encre4:#2E4363;
+  --bronze:#B0824A; --bronze-clair:#D8A96A;
+  --craie:#E8E6E1; --sourd:#8D97A8;
+  --vert:#6FA88B; --rouge:#C4685E; --ambre:#C99A4E;
+  --r:3px; --sur-bronze:#12100C;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--encre);color:var(--craie);
+  font-family:Carlito,"Segoe UI",system-ui,-apple-system,sans-serif;
+  font-size:15px;line-height:1.5;padding:0 0 100px;min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:680px;margin:0 auto;padding:0 18px}
+.eyebrow{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--sourd)}
+
+/* ---------- en-tête ---------- */
+header{position:sticky;top:0;z-index:20;
+  background:linear-gradient(var(--encre) 80%,rgba(16,27,45,0));padding:20px 0 16px}
+.onglets{display:flex;gap:4px;margin-bottom:14px;align-items:center}
+.accueil{display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+  width:28px;height:28px;margin-left:-6px;margin-right:2px;
+  color:var(--sourd);border-radius:7px;text-decoration:none;transition:background .18s,color .18s}
+.accueil:hover,.accueil:focus-visible{background:var(--encre2);color:var(--craie)}
+.accueil svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.onglet{background:none;border:1px solid var(--encre3);color:var(--sourd);
+  border-radius:2px;padding:5px 13px;font-size:12.5px;cursor:pointer}
+.onglet[aria-selected=true]{border-color:var(--bronze);color:var(--bronze-clair);background:var(--encre2)}
+.moyenne{display:flex;align-items:baseline;gap:11px}
+.moyenne b{font-family:Lora,Georgia,serif;font-weight:600;font-size:42px;line-height:1;letter-spacing:-.01em}
+.moyenne .sur{color:var(--sourd);font-size:15px}
+.mention{margin-left:auto;text-align:right;font-size:12px;line-height:1.4}
+.mention b{display:block;font-family:Lora,Georgia,serif;font-size:15px;font-weight:400}
+.bandeau{display:flex;gap:16px;margin-top:12px;padding-top:12px;border-top:1px solid var(--encre3);
+  font-size:12px;flex-wrap:wrap}
+.bandeau div{line-height:1.35}
+.bandeau b{display:block;font-family:Lora,Georgia,serif;font-size:16px;font-weight:400}
+.up{color:var(--vert)} .down{color:var(--rouge)} .warn{color:var(--ambre)} .neutre{color:var(--sourd)}
+
+/* ---------- sections ---------- */
+.section-titre{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--sourd);
+  margin:26px 0 10px;display:flex;align-items:center;gap:10px}
+.section-titre::after{content:"";flex:1;height:1px;background:var(--encre3)}
+
+/* ---------- cartes UE ---------- */
+.ue{background:var(--encre2);border:1px solid var(--encre3);border-radius:var(--r);
+  margin-bottom:10px;overflow:hidden}
+.ue.valide{border-left:2px solid var(--vert)}
+.ue.risque{border-left:2px solid var(--rouge)}
+.ue-tete{display:flex;align-items:flex-start;gap:12px;padding:14px 15px;cursor:pointer;user-select:none}
+.ue-tete:focus-visible{outline:2px solid var(--bronze);outline-offset:-2px}
+.ue-nom{font-family:Lora,Georgia,serif;font-size:16.5px;line-height:1.25}
+.ue-meta{font-size:11.5px;color:var(--sourd);margin-top:3px}
+.ue-note{margin-left:auto;text-align:right;flex-shrink:0}
+.ue-note b{font-family:Lora,Georgia,serif;font-size:22px;line-height:1}
+.ue-note span{display:block;font-size:10.5px;color:var(--sourd);margin-top:3px}
+
+/* signature : barème inverse */
+.bareme{padding:0 15px 13px}
+.jauge{position:relative;height:22px;border-radius:2px;overflow:hidden;background:var(--encre3);display:flex}
+.jauge .acquis{background:var(--bronze);height:100%}
+.jauge .restant{height:100%;background:repeating-linear-gradient(115deg,
+  rgba(176,130,74,.20) 0 5px,transparent 5px 10px)}
+.jauge .cible{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--craie)}
+.verdict{margin-top:9px;font-size:13px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.verdict .req{font-family:Lora,Georgia,serif;font-size:19px;color:var(--bronze-clair)}
+.verdict .req.up{color:var(--vert)}
+.verdict .req.down{color:var(--rouge)}
+.verdict small{color:var(--sourd);font-size:12px}
+
+/* temps vs enjeu */
+.temps{margin-top:11px;font-size:11px;color:var(--sourd)}
+.duo-barre{display:flex;flex-direction:column;gap:3px;margin-top:5px}
+.barre{height:5px;background:var(--encre3);border-radius:2px;overflow:hidden}
+.barre i{display:block;height:100%}
+.barre.enjeu i{background:var(--bronze)}
+.barre.heures i{background:var(--encre4)}
+.legende{display:flex;justify-content:space-between;font-size:10.5px;margin-top:4px}
+
+/* ---------- évaluations ---------- */
+.evals{border-top:1px solid var(--encre3);padding:6px 15px 13px;display:none}
+.ue.open .evals{display:block}
+.eval{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid rgba(34,51,78,.6)}
+.eval:last-of-type{border-bottom:0}
+.eval-nom{flex:1;min-width:0;font-size:13.5px}
+.eval-nom small{display:block;color:var(--sourd);font-size:11px}
+.eval-nom small.proche{color:var(--ambre)}
+input,select,button,textarea{font:inherit;color:inherit}
+input[type=number],input[type=text],input[type=date],select{
+  background:var(--encre);border:1px solid var(--encre3);border-radius:2px;
+  padding:6px 8px;color:var(--craie);width:100%}
+input[type=number]{width:70px;text-align:center}
+input:focus,select:focus{outline:2px solid var(--bronze);outline-offset:-1px}
+.mini{background:none;border:1px solid var(--encre3);color:var(--sourd);border-radius:2px;
+  padding:5px 9px;font-size:12px;cursor:pointer;white-space:nowrap}
+.mini:hover{border-color:var(--bronze);color:var(--bronze-clair)}
+.mini.danger:hover{border-color:var(--rouge);color:var(--rouge)}
+.grille-ajout{display:grid;grid-template-columns:1fr 66px 74px;gap:6px;margin-top:11px}
+.grille-ajout .plein{grid-column:1/-1}
+
+/* ---------- séances ---------- */
+.seance{display:flex;gap:10px;align-items:center;font-size:13px;padding:9px 0;
+  border-bottom:1px solid var(--encre2)}
+.seance .pastille{width:6px;height:6px;border-radius:50%;background:var(--bronze);flex-shrink:0}
+.seance .quand{color:var(--sourd);font-size:11.5px;margin-left:auto;flex-shrink:0}
+
+/* ---------- échéances ---------- */
+.echeance{display:flex;gap:11px;align-items:baseline;font-size:13px;padding:8px 0;
+  border-bottom:1px solid var(--encre2)}
+.echeance b{font-family:Lora,Georgia,serif;font-weight:400;font-size:15px;flex-shrink:0;width:52px}
+
+/* ---------- barre d'action ---------- */
+.actions{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--encre2);
+  border-top:1px solid var(--encre3);padding:10px 18px calc(10px + env(safe-area-inset-bottom))}
+.actions .wrap{display:flex;gap:7px;padding:0;max-width:680px}
+.btn{flex:1;background:var(--bronze);color:var(--sur-bronze);border:0;border-radius:2px;
+  padding:11px 6px;font-size:13px;font-weight:600;cursor:pointer}
+.btn.ghost{background:none;color:var(--sourd);border:1px solid var(--encre3);font-weight:400}
+.btn:hover{background:var(--bronze-clair)}
+.btn.ghost:hover{color:var(--craie);border-color:var(--bronze)}
+
+.vide{color:var(--sourd);font-size:13.5px;padding:16px 0;line-height:1.6}
+dialog{background:var(--encre2);color:var(--craie);border:1px solid var(--encre3);
+  border-radius:var(--r);padding:20px;max-width:410px;width:calc(100% - 36px)}
+dialog::backdrop{background:rgba(9,15,26,.74)}
+dialog h3{font-family:Lora,Georgia,serif;font-weight:600;margin-bottom:6px;font-size:19px}
+dialog p.aide{font-size:12px;color:var(--sourd);margin-bottom:10px;line-height:1.5}
+dialog label{display:block;font-size:11px;color:var(--sourd);margin:11px 0 4px;
+  letter-spacing:.08em;text-transform:uppercase}
+dialog .duo{display:flex;gap:10px}
+dialog .duo>div{flex:1}
+dialog .duo input[type=number]{width:100%}
+dialog .fin{display:flex;gap:8px;margin-top:18px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:80px;z-index:50;
+  background:var(--encre4);border:1px solid var(--bronze);color:var(--craie);
+  padding:9px 15px;border-radius:2px;font-size:13px;opacity:0;pointer-events:none;
+  transition:opacity .25s}
+.toast.on{opacity:1}
+/* ---------- cartes / SM-2 ---------- */
+.badge{display:inline-block;min-width:18px;padding:1px 6px;border-radius:9px;background:var(--bronze);
+  color:var(--sur-bronze);font-size:10.5px;font-weight:600;text-align:center}
+.badge.zero{background:var(--encre3);color:var(--sourd)}
+.bloc-cartes{border-top:1px solid var(--encre3);margin-top:11px;padding-top:10px}
+.bloc-cartes .entete{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--sourd);
+  letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.carte-l{display:flex;gap:9px;align-items:flex-start;padding:7px 0;font-size:12.5px;
+  border-bottom:1px solid rgba(34,51,78,.6)}
+.carte-l:last-of-type{border-bottom:0}
+.carte-l>div{flex:1;min-width:0}
+.carte-l small{display:block;color:var(--sourd);font-size:11px;margin-top:2px}
+#revision{position:fixed;inset:0;z-index:60;background:var(--encre);display:none;flex-direction:column;
+  padding:20px 18px calc(16px + env(safe-area-inset-bottom))}
+#revision.on{display:flex}
+.rev-tete{display:flex;align-items:center;gap:10px;font-size:10.5px;color:var(--sourd);
+  letter-spacing:.14em;text-transform:uppercase}
+.rev-tete .fermer{margin-left:auto;background:none;border:0;color:var(--sourd);font-size:20px;
+  cursor:pointer;line-height:1;padding:2px 6px}
+.rev-corps{flex:1;display:flex;flex-direction:column;justify-content:center;overflow-y:auto;
+  max-width:620px;width:100%;margin:0 auto;gap:16px;padding:18px 0}
+.rev-q{font-family:Lora,Georgia,serif;font-size:21px;line-height:1.35}
+.rev-r{font-size:15.5px;line-height:1.55;padding-top:16px;border-top:1px solid var(--encre3);white-space:pre-wrap}
+.rev-pied{max-width:620px;width:100%;margin:0 auto}
+.notes{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.notes button{padding:12px 3px;border-radius:2px;border:1px solid var(--encre3);background:var(--encre2);
+  font-size:12.5px;cursor:pointer;color:var(--craie)}
+.notes button b{display:block;font-size:10px;color:var(--sourd);font-weight:400;margin-top:3px}
+.notes button:hover{border-color:var(--bronze)}
+.notes button[data-q="1"]:hover{border-color:var(--rouge)}
+textarea{background:var(--encre);border:1px solid var(--encre3);border-radius:2px;padding:8px;
+  color:var(--craie);width:100%;resize:vertical;font-size:13.5px;line-height:1.45}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="onglets">
+      <a class="accueil" href="index.html" aria-label="Accueil">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      </a>
+      <span class="sems" role="tablist" id="onglets" style="display:flex;gap:4px"></span>
+    </div>
+    <div class="moyenne">
+      <b id="moy">—</b><span class="sur">/20</span>
+      <div class="mention" id="mention"></div>
+    </div>
+    <div class="bandeau" id="bandeau"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="section-titre" id="t-ue">Unités d'enseignement</div>
+  <div id="liste"></div>
+
+  <div class="section-titre">Échéances</div>
+  <div id="echeances"></div>
+
+  <div class="section-titre">Séances de travail</div>
+  <div id="seances"></div>
+</main>
+
+<div class="actions">
+  <div class="wrap">
+    <button class="btn" id="b-reviser">Réviser</button>
+    <button class="btn ghost" id="b-ue">+ UE</button>
+    <button class="btn ghost" id="b-seance">+ Séance</button>
+    <button class="btn ghost" id="b-import">Import</button>
+    <button class="btn ghost" id="b-export">Export</button>
+  </div>
+</div>
+<input type="file" id="fichier" accept="application/json,.json" hidden>
+<div class="toast" id="toast"></div>
+
+<div id="revision" aria-hidden="true">
+  <div class="rev-tete">
+    <span id="rev-ue">—</span><span id="rev-reste"></span>
+    <button class="fermer" id="rev-stop" aria-label="Quitter la session">✕</button>
+  </div>
+  <div class="rev-corps">
+    <div class="rev-q" id="rev-q"></div>
+    <div class="rev-r" id="rev-r" hidden></div>
+  </div>
+  <div class="rev-pied">
+    <button class="btn" id="rev-voir" style="width:100%">Afficher la réponse</button>
+    <div class="notes" id="rev-notes" hidden>
+      <button data-q="1">Raté<b>reprise</b></button>
+      <button data-q="3">Difficile<b></b></button>
+      <button data-q="4">Correct<b></b></button>
+      <button data-q="5">Facile<b></b></button>
+    </div>
+  </div>
+</div>
+
+<dialog id="d-cartes">
+  <h3>Ajouter des cartes</h3>
+  <p class="aide">Question sur une ligne, réponse sur la suivante, une ligne vide entre deux cartes.
+  C'est le format que produit la skill <code>fiche-revision</code> : tu colles son bloc tel quel.</p>
+  <label for="c-ue">UE</label>
+  <select id="c-ue"></select>
+  <label for="c-txt">Cartes</label>
+  <textarea id="c-txt" rows="8" placeholder="Que devient l'investissement si le taux directeur monte, et par quel canal ?
+Il recule : hausse du coût du capital, arbitrage en faveur de l'épargne, contraction de la FBCF.
+
+Sous quelle condition le multiplicateur budgétaire est-il maximal ?
+Économie fermée, propension à consommer élevée, taux d'intérêt fixe."></textarea>
+  <div class="fin">
+    <button class="btn" id="c-ok">Ajouter</button>
+    <button class="btn ghost" id="c-non">Annuler</button>
+  </div>
+</dialog>
+
+<dialog id="d-ue">
+  <h3 id="d-ue-titre">Nouvelle UE</h3>
+  <p class="aide">Les crédits déterminent le poids dans la moyenne du semestre. La cible est la note que tu vises, pas la note que tu espères.</p>
+  <label for="f-nom">Intitulé</label>
+  <input type="text" id="f-nom" placeholder="Statistiques inférentielles">
+  <div class="duo">
+    <div><label for="f-ects">Crédits ECTS</label><input type="number" id="f-ects" value="6" min="1" max="30"></div>
+    <div><label for="f-cible">Note visée</label><input type="number" id="f-cible" value="14" min="0" max="20" step="0.5"></div>
+  </div>
+  <label for="f-nature">Nature dominante</label>
+  <select id="f-nature">
+    <option value="quanti">Quantitative (maths, stats, économétrie)</option>
+    <option value="mixte">Mixte (micro, macro, compta)</option>
+    <option value="redac">Rédactionnelle (histoire, droit, langues)</option>
+  </select>
+  <div class="fin">
+    <button class="btn" id="f-ok">Enregistrer</button>
+    <button class="btn ghost" id="f-non">Annuler</button>
+  </div>
+</dialog>
+
+<dialog id="d-seance">
+  <h3>Séance de travail</h3>
+  <p class="aide">À remplir après la séance, pas avant. Le journal ne sert qu'à confronter le temps réel aux points en jeu.</p>
+  <label for="s-ue">UE travaillée</label>
+  <select id="s-ue"></select>
+  <div class="duo">
+    <div><label for="s-min">Minutes</label><input type="number" id="s-min" value="60" min="5" step="5"></div>
+    <div><label for="s-date">Date</label><input type="date" id="s-date"></div>
+  </div>
+  <label for="s-quoi">Nature</label>
+  <select id="s-quoi">
+    <option>Annales / exercices</option>
+    <option>Épreuve blanche</option>
+    <option>Rappel actif / cartes</option>
+    <option>Fiche de synthèse</option>
+    <option>Relecture</option>
+    <option>Cours magistral</option>
+  </select>
+  <div class="fin">
+    <button class="btn" id="s-ok">Enregistrer</button>
+    <button class="btn ghost" id="s-non">Annuler</button>
+  </div>
+</dialog>
+
+<script>
+/* =================================================================
+   COCKPIT L2 — schéma v2
+   Le JSON exporté est le contrat avec Claude Code. Toute évolution
+   du schéma doit incrémenter `version` et être reportée dans
+   CLAUDE.md, sinon les skills lisent des champs qui n'existent plus.
+==================================================================*/
+const CLE='cockpit-l2', VERSION=3;
+const MENTIONS=[[16,'Très bien'],[14,'Bien'],[12,'Assez bien'],[10,'Passable']];
+const SEUIL_UE=10, SEUIL_SEM=10;   // règles licence : UE acquise ≥10, semestre compensé ≥10
+
+const store={
+  async lire(){
+    try{
+      if(window.storage){const r=await window.storage.get(CLE,false);return r?JSON.parse(r.value):null;}
+      const b=localStorage.getItem(CLE);return b?JSON.parse(b):null;
+    }catch(e){return null;}
+  },
+  async ecrire(d){
+    const s=JSON.stringify(d);
+    try{
+      if(window.storage){await window.storage.set(CLE,s,false);return true;}
+      localStorage.setItem(CLE,s);return true;
+    }catch(e){console.warn('sauvegarde impossible',e);return false;}
+  }
+};
+
+let etat=neuf(), editionUE=null;
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+const arrondi=(n,d=2)=>Math.round(n*10**d)/10**d;
+const uid=()=>Math.random().toString(36).slice(2,9);
+const fmt=n=>(n===null||n===undefined||isNaN(n))?'—':arrondi(n).toFixed(2).replace('.',',');
+const fmt1=n=>(n===null||n===undefined||isNaN(n))?'—':arrondi(n,1).toFixed(1).replace('.',',');
+const echap=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const auj=()=>{const d=new Date();d.setHours(0,0,0,0);return d;};
+const iso=d=>new Date(d).toISOString().slice(0,10);
+
+function neuf(){
+  return {version:VERSION,
+    semestres:[{id:'s3',nom:'Semestre 3',ues:[]},{id:'s4',nom:'Semestre 4',ues:[]}],
+    seances:[],cartes:[],actif:'s3'};
+}
+function normCarte(c){
+  return {id:c.id||uid(),ueId:c.ueId,q:c.q,r:c.r,
+    ef:typeof c.ef==='number'?c.ef:2.5, n:c.n||0, intervalle:c.intervalle||0,
+    du:c.du||iso(new Date()), vues:c.vues||0};
+}
+function migrer(d){
+  if(!d) return neuf();
+  if(d.semestres){   // v2 et v3 : on complète les champs manquants sans rien perdre
+    return {version:VERSION,
+      semestres:d.semestres.map(s=>({id:s.id,nom:s.nom,
+        ues:(s.ues||[]).map(u=>({...u,nature:u.nature||'mixte',
+          evals:(u.evals||[]).map(e=>({...e,date:e.date||null}))}))})),
+      seances:d.seances||[], cartes:(d.cartes||[]).map(normCarte), actif:d.actif||'s3'};
+  }
+  if(d.ues){ // schéma v1 : une seule liste d'UE, on la range en S3
+    const n=neuf();
+    n.semestres[0].ues=d.ues.map(u=>({...u,nature:u.nature||'mixte',
+      evals:(u.evals||[]).map(e=>({...e,date:e.date||null}))}));
+    n.seances=(d.seances||[]).map(s=>({...s,semId:'s3'}));
+    return n;
+  }
+  return neuf();
+}
+const sem=()=>etat.semestres.find(s=>s.id===etat.actif)||etat.semestres[0];
+
+/* ------------------------- SM-2 -------------------------
+   Algorithme SuperMemo 2. Chaque carte porte son facteur de
+   facilité (ef), son compteur de réussites consécutives (n) et
+   son intervalle en jours. La note q va de 0 à 5 ; sous 3, la
+   série repart de zéro et la carte revient dans la session.
+----------------------------------------------------------*/
+function carteNeuve(ueId,q,r){
+  return {id:uid(),ueId,q,r,ef:2.5,n:0,intervalle:0,du:iso(new Date()),vues:0};
+}
+function prochainIntervalle(c,q){
+  if(q<3) return 1;
+  if(c.n===0) return 1;
+  if(c.n===1) return 6;
+  return Math.max(1,Math.round(c.intervalle*c.ef));
+}
+function sm2(c,q){
+  c.intervalle=prochainIntervalle(c,q);
+  c.n = q<3 ? 0 : c.n+1;
+  c.ef = Math.max(1.3, Math.round((c.ef+(0.1-(5-q)*(0.08+(5-q)*0.02)))*100)/100);
+  const d=auj(); d.setDate(d.getDate()+c.intervalle);
+  c.du=iso(d); c.vues++;
+  return c;
+}
+const cartesUE=ueId=>etat.cartes.filter(c=>c.ueId===ueId);
+const dues=ueId=>{const t=iso(new Date());
+  return etat.cartes.filter(c=>(!ueId||c.ueId===ueId)&&c.du<=t);};
+function duesSemestre(s=sem()){
+  const ids=new Set(s.ues.map(u=>u.id));
+  return dues().filter(c=>ids.has(c.ueId));
+}
+function libelleIntervalle(j){
+  if(j<=1) return 'demain';
+  if(j<30) return j+' j';
+  if(j<365) return Math.round(j/30)+' mois';
+  return Math.round(j/365*10)/10+' an';
+}
+
+/* ------------------------- calcul ------------------------- */
+function bilan(ue){
+  let pts=0,coefFait=0,coefTotal=0;
+  ue.evals.forEach(e=>{
+    coefTotal+=e.coef;
+    if(e.note!==null&&e.note!==undefined&&e.note!==''){pts+=Number(e.note)*e.coef;coefFait+=e.coef;}
+  });
+  const coefRestant=coefTotal-coefFait;
+  const moyenne=coefFait?pts/coefFait:null;
+  const requis=coefRestant>0?(ue.cible*coefTotal-pts)/coefRestant:null;
+  const requisPourValider=coefRestant>0?(SEUIL_UE*coefTotal-pts)/coefRestant:null;
+  const maxAtteignable=coefTotal?(pts+20*coefRestant)/coefTotal:null;
+  const minGaranti=coefTotal?pts/coefTotal:null;   // si 0 partout sur le restant
+  return {pts,coefFait,coefTotal,coefRestant,moyenne,requis,requisPourValider,maxAtteignable,minGaranti};
+}
+
+function moyenneSemestre(s=sem()){
+  let n=0,d=0;
+  s.ues.forEach(ue=>{const b=bilan(ue);if(b.moyenne!==null){n+=b.moyenne*ue.ects;d+=ue.ects;}});
+  return d?n/d:null;
+}
+function cibleSemestre(s=sem()){
+  let n=0,d=0;
+  s.ues.forEach(ue=>{n+=ue.cible*ue.ects;d+=ue.ects;});
+  return d?n/d:null;
+}
+function ectsBilan(s=sem()){
+  let acquis=0,menace=0,total=0,indetermine=0;
+  s.ues.forEach(ue=>{
+    total+=ue.ects;
+    const b=bilan(ue);
+    if(b.minGaranti!==null&&b.minGaranti>=SEUIL_UE) acquis+=ue.ects;                       // acquis quoi qu'il arrive
+    else if(b.maxAtteignable!==null&&b.maxAtteignable<SEUIL_UE) menace+=ue.ects;           // perdu en session 1
+    else indetermine+=ue.ects;
+  });
+  return {acquis,menace,indetermine,total};
+}
+function mention(m){
+  if(m===null) return null;
+  for(const [seuil,nom] of MENTIONS) if(m>=seuil) return nom;
+  return 'Sous la barre';
+}
+
+// points de moyenne encore en jeu — c'est ce qui ordonne la liste
+function enJeu(ue,s=sem()){
+  const b=bilan(ue);
+  const totalEcts=s.ues.reduce((t,u)=>t+u.ects,0)||1;
+  const base=b.moyenne===null?ue.cible:Math.max(0,ue.cible-b.moyenne);
+  const levier=b.coefTotal?b.coefRestant/b.coefTotal:1;
+  return base*ue.ects*levier/totalEcts;
+}
+
+// minutes travaillées sur une UE dans les N derniers jours
+function minutesUE(ueId,jours=21){
+  const limite=Date.now()-jours*864e5;
+  return etat.seances.filter(s=>s.ueId===ueId&&s.ts>=limite).reduce((t,s)=>t+s.min,0);
+}
+
+function echeancesAVenir(s=sem(),limite=6){
+  const t0=auj().getTime();
+  const l=[];
+  s.ues.forEach(ue=>ue.evals.forEach(e=>{
+    if(e.date&&(e.note===null||e.note===undefined||e.note==='')){
+      const d=new Date(e.date+'T00:00:00').getTime();
+      if(d>=t0) l.push({ue,eval:e,ts:d,jours:Math.round((d-t0)/864e5)});
+    }
+  }));
+  return l.sort((a,b)=>a.ts-b.ts).slice(0,limite);
+}
+
+/* ------------------------- rendu ------------------------- */
+function rendre(){
+  $('#onglets').innerHTML=etat.semestres.map(s=>
+    `<button class="onglet" role="tab" data-sem="${s.id}" aria-selected="${s.id===etat.actif}">${echap(s.nom)}</button>`
+  ).join('');
+
+  const s=sem(), m=moyenneSemestre(), c=cibleSemestre(), E=ectsBilan();
+  $('#moy').textContent=m===null?'—':fmt(m);
+
+  const men=mention(m);
+  $('#mention').innerHTML = m===null ? '' :
+    `<b class="${m>=SEUIL_SEM?'up':'down'}">${men}</b>
+     <span class="neutre">visé : ${mention(c)||'—'}</span>`;
+
+  const ecart=(m!==null&&c!==null)?m-c:null;
+  $('#bandeau').innerHTML = !s.ues.length ? '' : `
+    <div><b class="${ecart===null?'neutre':(Math.abs(ecart)<.05?'neutre':(ecart>0?'up':'down'))}">${
+      ecart===null?'—':(ecart>0?'+':'')+fmt(ecart)}</b><span class="neutre">écart à la cible ${fmt1(c)}</span></div>
+    <div><b class="${E.acquis===E.total?'up':''}">${E.acquis}<span style="font-size:11px;color:var(--sourd)"> / ${E.total}</span></b><span class="neutre">ECTS sécurisés</span></div>
+    ${E.menace?`<div><b class="down">${E.menace}</b><span class="neutre">ECTS en session 2</span></div>`:''}
+    ${etat.cartes.length?`<div><b class="${duesSemestre().length?'':'neutre'}">${duesSemestre().length}</b><span class="neutre">cartes dues</span></div>`:''}
+    ${prochaineEcheanceHTML()}`;
+
+  const nd=duesSemestre().length;
+  $('#b-reviser').textContent = nd ? `Réviser · ${nd}` : 'Réviser';
+  $('#b-reviser').className = nd ? 'btn' : 'btn ghost';
+
+  const ues=[...s.ues].sort((a,b)=>enJeu(b)-enJeu(a));
+  $('#t-ue').firstChild.textContent=ues.length?"Unités d'enseignement — par points en jeu":"Unités d'enseignement";
+  $('#liste').innerHTML=ues.length?ues.map(carteUE).join(''):
+    `<div class="vide">Aucune UE dans ce semestre. Saisis-les avec leurs crédits, la note que tu vises
+     et les épreuves prévues avec leurs dates — le cockpit calcule ensuite ce qu'il te faut sur chaque
+     épreuve restante, et dans quel ordre travailler.${s.id==='s3'?`
+     <div style="margin-top:14px"><button class="btn" id="b-maquette">Charger la maquette S3 officielle</button></div>
+     <div style="margin-top:8px;font-size:12.5px">Les neuf EC du livret pédagogique 2026-2027, avec leurs
+     crédits et leurs épreuves. Il ne restera qu'à saisir les notes.</div>`:''}</div>`;
+
+  rendreEcheances(); rendreSeances(); brancher();
+}
+
+function prochaineEcheanceHTML(){
+  const e=echeancesAVenir()[0];
+  if(!e) return '';
+  const cls=e.jours<=3?'down':(e.jours<=10?'warn':'');
+  return `<div><b class="${cls}">J−${e.jours}</b><span class="neutre">${echap(e.eval.nom)} · ${echap(e.ue.nom)}</span></div>`;
+}
+
+function carteUE(ue){
+  const b=bilan(ue), s=sem();
+  const pctA=b.coefTotal?(b.coefFait/b.coefTotal)*100:0;
+  const posCible=Math.min(100,(ue.cible/20)*100);
+
+  let classe='';
+  if(b.minGaranti!==null&&b.minGaranti>=SEUIL_UE) classe='valide';
+  else if(b.maxAtteignable!==null&&b.maxAtteignable<SEUIL_UE) classe='risque';
+
+  let verdict;
+  if(b.coefTotal===0){
+    verdict=`<small>Aucune épreuve saisie. Ouvre la carte et ajoute les évaluations du semestre.</small>`;
+  } else if(b.coefRestant<=0){
+    verdict=b.moyenne>=ue.cible
+      ? `<span class="req up">Cible atteinte</span><small>moyenne définitive ${fmt(b.moyenne)}</small>`
+      : `<span class="req ${b.moyenne>=SEUIL_UE?'':'down'}">${fmt(b.moyenne)}</span><small>définitif — cible manquée de ${fmt(ue.cible-b.moyenne)}${b.moyenne<SEUIL_UE?' · UE non acquise':''}</small>`;
+  } else if(b.requis>20){
+    verdict=`<span class="req down">Cible hors d'atteinte</span><small>maximum possible ${fmt(b.maxAtteignable)}`
+      +(b.requisPourValider<=20?` · il faut ${fmt(b.requisPourValider)} pour valider l'UE`:` · UE non validable en session 1`)
+      +`</small>`;
+  } else if(b.requis<=0){
+    verdict=`<span class="req up">Cible déjà sécurisée</span><small>même avec 0 sur ce qui reste</small>`;
+  } else {
+    verdict=`<span class="req">${fmt(b.requis)}</span>`
+      +`<small>sur les ${arrondi(b.coefRestant)} points de coefficient restants`
+      +(b.requisPourValider>0?` · ${fmt(b.requisPourValider)} suffirait à valider`:` · UE déjà acquise`)
+      +`</small>`;
+  }
+
+  // temps consacré vs points en jeu
+  const totalMin=s.ues.reduce((t,u)=>t+minutesUE(u.id),0);
+  const totalEnJeu=s.ues.reduce((t,u)=>t+enJeu(u),0);
+  const partT=totalMin?minutesUE(ue.id)/totalMin*100:0;
+  const partE=totalEnJeu?enJeu(ue)/totalEnJeu*100:0;
+  const bloc=totalMin?`
+    <div class="temps">
+      <div class="duo-barre">
+        <div class="barre enjeu"><i style="width:${partE}%"></i></div>
+        <div class="barre heures"><i style="width:${partT}%"></i></div>
+      </div>
+      <div class="legende">
+        <span>enjeu ${Math.round(partE)}% · temps ${Math.round(partT)}%</span>
+        <span class="${partT+8<partE?'down':(partT>partE+15?'warn':'neutre')}">${
+          partT+8<partE?'sous-travaillée':(partT>partE+15?'sur-travaillée':'aligné')}</span>
+      </div>
+    </div>`:'';
+
+  return `
+  <article class="ue ${classe}" data-id="${ue.id}">
+    <div class="ue-tete" tabindex="0" role="button" aria-expanded="false">
+      <div>
+        <div class="ue-nom">${echap(ue.nom)}</div>
+        <div class="ue-meta">${ue.ects} ECTS · vise ${fmt1(ue.cible)} · ${ue.evals.length} épreuve${ue.evals.length>1?'s':''}${
+          ue.nature==='quanti'?' · quantitative':''}${
+          cartesUE(ue.id).length?` · ${cartesUE(ue.id).length} carte${cartesUE(ue.id).length>1?'s':''}`:''}</div>
+      </div>
+      <div class="ue-note"><b>${b.moyenne===null?'—':fmt(b.moyenne)}</b><span>actuel</span></div>
+    </div>
+    <div class="bareme">
+      <div class="jauge" role="img" aria-label="Part des coefficients déjà évalués">
+        <div class="acquis" style="width:${pctA}%"></div>
+        <div class="restant" style="width:${100-pctA}%"></div>
+        <div class="cible" style="left:${posCible}%"></div>
+      </div>
+      <div class="verdict">${verdict}</div>
+      ${bloc}
+    </div>
+    <div class="evals">
+      ${ue.evals.map(ev=>{
+        const j=ev.date?Math.round((new Date(ev.date+'T00:00:00')-auj())/864e5):null;
+        const noteVide=(ev.note===null||ev.note===undefined||ev.note==='');
+        const info=ev.date
+          ? (noteVide&&j>=0 ? `coef ${ev.coef} · J−${j}` : `coef ${ev.coef} · ${ev.date.split('-').reverse().slice(0,2).join('/')}`)
+          : `coef ${ev.coef} · sans date`;
+        return `<div class="eval">
+          <div class="eval-nom">${echap(ev.nom)}<small class="${noteVide&&j!==null&&j>=0&&j<=10?'proche':''}">${info}</small></div>
+          <input type="number" min="0" max="20" step="0.25" placeholder="—" value="${noteVide?'':ev.note}"
+                 data-note="${ev.id}" aria-label="Note pour ${echap(ev.nom)}">
+          <button class="mini danger" data-suppr-eval="${ev.id}" aria-label="Supprimer l'épreuve">✕</button>
+        </div>`;}).join('')}
+      <div class="grille-ajout">
+        <input type="text" data-neval="${ue.id}" placeholder="Partiel, CC, TD…" aria-label="Nom de l'épreuve">
+        <input type="number" data-ncoef="${ue.id}" value="1" min="0.5" step="0.5" aria-label="Coefficient">
+        <button class="mini" data-add-eval="${ue.id}">Ajouter</button>
+        <input class="plein" type="date" data-ndate="${ue.id}" aria-label="Date de l'épreuve">
+      </div>
+      <div class="bloc-cartes">
+        <div class="entete">Rappel actif
+          <span class="badge ${dues(ue.id).length?'':'zero'}">${dues(ue.id).length}</span>
+          <span style="letter-spacing:0;text-transform:none">due${dues(ue.id).length>1?'s':''} sur ${cartesUE(ue.id).length}</span>
+        </div>
+        ${cartesUE(ue.id).slice(0,3).map(c=>`<div class="carte-l">
+            <div>${echap(c.q.slice(0,90))}${c.q.length>90?'…':''}
+              <small>revue ${c.vues} fois · prochaine le ${c.du.split('-').reverse().slice(0,2).join('/')} · facilité ${c.ef}</small></div>
+            <button class="mini danger" data-suppr-carte="${c.id}" aria-label="Supprimer la carte">✕</button>
+          </div>`).join('')}
+        ${cartesUE(ue.id).length>3?`<div class="carte-l"><div><small>et ${cartesUE(ue.id).length-3} autre${cartesUE(ue.id).length-3>1?'s':''}</small></div></div>`:''}
+        <div class="grille-ajout">
+          <button class="mini plein" data-add-cartes="${ue.id}">Coller des cartes</button>
+          ${dues(ue.id).length?`<button class="mini plein" data-rev-ue="${ue.id}">Réviser cette UE (${dues(ue.id).length})</button>`:''}
+        </div>
+      </div>
+      <div class="grille-ajout">
+        <button class="mini plein" data-edit-ue="${ue.id}">Modifier crédits, cible ou intitulé</button>
+        <button class="mini danger plein" data-suppr-ue="${ue.id}">Supprimer cette UE</button>
+      </div>
+    </div>
+  </article>`;
+}
+
+function rendreEcheances(){
+  const l=echeancesAVenir();
+  $('#echeances').innerHTML=l.length
+    ? l.map(e=>`<div class="echeance">
+        <b class="${e.jours<=3?'down':(e.jours<=10?'warn':'')}">J−${e.jours}</b>
+        <span>${echap(e.eval.nom)} <span class="neutre">· ${echap(e.ue.nom)} · coef ${e.eval.coef}</span></span>
+      </div>`).join('')
+    : `<div class="vide">Aucune épreuve datée à venir. Les dates rendent le compte à rebours et le plan de
+       semaine utilisables — ajoute-les en ouvrant une UE.</div>`;
+}
+
+function rendreSeances(){
+  const S=$('#seances');
+  const l=[...etat.seances].sort((a,b)=>b.ts-a.ts).slice(0,8);
+  if(!l.length){
+    S.innerHTML=`<div class="vide">Rien de consigné. Note une séance après l'avoir faite : c'est la seule
+      façon de savoir si ton temps va là où sont les points.</div>`;
+    return;
+  }
+  const t21=etat.seances.filter(x=>x.ts>=Date.now()-21*864e5).reduce((t,x)=>t+x.min,0);
+  S.innerHTML=l.map(x=>{
+    const ue=(etat.semestres.flatMap(s=>s.ues)).find(u=>u.id===x.ueId);
+    return `<div class="seance"><span class="pastille"></span>
+      <span>${ue?echap(ue.nom):'UE supprimée'} <span class="neutre">· ${echap(x.quoi)}</span></span>
+      <span class="quand">${x.min} min · ${new Date(x.ts).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}</span>
+    </div>`;
+  }).join('')+`<div class="seance" style="border:0"><span class="quand" style="margin-left:0">
+      ${Math.floor(t21/60)} h ${String(t21%60).padStart(2,'0')} sur les 21 derniers jours</span></div>`;
+}
+
+/* ------------------------- interactions ------------------------- */
+/* Maquette officielle du S3 — livret pédagogique L2 Économie (Reims) 2026-2027.
+   Un EC = une ligne, avec ses propres crédits : c'est ainsi qu'ils figurent au
+   relevé de notes. Les coefficients d'épreuve reprennent les pourcentages du
+   livret. Session d'examens : 7 au 19 décembre 2026. */
+const MAQUETTE_S3=[
+  {nom:'3.1 Microéconomie',              ects:6, nature:'quanti', evals:[['Contrôle continu',1,null],['Écrit terminal · 3 h',1,null]]},
+  {nom:'3.2 Monnaie et financement',     ects:6, nature:'mixte',  evals:[['Écrit terminal · 1 h 30',1,null]]},
+  {nom:'3.3.1 Calcul et analyse des coûts', ects:3, nature:'quanti', evals:[['Contrôle continu',1,'2026-11-16'],['Écrit terminal · 1 h 30',1,null]]},
+  {nom:'3.3.2 TEDS — transition écologique', ects:3, nature:'mixte', evals:[['Écrit terminal · 45 min',1,null]]},
+  {nom:'3.4.1 Techniques financières',   ects:2, nature:'quanti', evals:[['Écrit terminal · 1 h 30',1,null]]},
+  {nom:"3.4.2 Techniques d'enquête",     ects:4, nature:'mixte',  evals:[['Contrôle continu',1,null],['Écrit terminal · 1 h 30',1,null]]},
+  {nom:'3.5.1 Anglais professionnel',    ects:2, nature:'mixte',  evals:[['Contrôle continu 1',1,null],['Contrôle continu 2',1,null]]},
+  {nom:'3.5.2A Inférence statistique',   ects:2, nature:'quanti', evals:[['Contrôle continu',1,null],['Écrit terminal · 1 h 30',1,null]]},
+  {nom:'3.5.3A Histoire des sciences',   ects:2, nature:'mixte',  evals:[['Écrit terminal · 1 h 30',1,null]]},
+];
+
+function brancher(){
+  $$('.onglet').forEach(o=>o.onclick=async()=>{etat.actif=o.dataset.sem;await sauver();});
+
+  const bm=$('#b-maquette');
+  if(bm) bm.onclick=async()=>{
+    sem().ues=MAQUETTE_S3.map(m=>({id:uid(),nom:m.nom,ects:m.ects,cible:14,nature:m.nature,
+      evals:m.evals.map(([nom,coef,date])=>({id:uid(),nom,coef,note:null,date}))}));
+    await sauver();
+  };
+
+  $$('.ue-tete').forEach(t=>{
+    const carte=t.closest('.ue');
+    const bascule=()=>{carte.classList.toggle('open');t.setAttribute('aria-expanded',carte.classList.contains('open'));};
+    t.onclick=bascule;
+    t.onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();bascule();}};
+  });
+
+  $$('[data-note]').forEach(inp=>inp.onchange=async()=>{
+    const id=inp.dataset.note;
+    const v=inp.value===''?null:Math.max(0,Math.min(20,Number(inp.value)));
+    sem().ues.forEach(u=>u.evals.forEach(e=>{if(e.id===id)e.note=v;}));
+    await sauver(ouvertDe(id));
+  });
+
+  $$('[data-add-eval]').forEach(b=>b.onclick=async()=>{
+    const id=b.dataset.addEval;
+    const nom=$(`[data-neval="${id}"]`).value.trim();
+    const coef=Number($(`[data-ncoef="${id}"]`).value)||1;
+    const date=$(`[data-ndate="${id}"]`).value||null;
+    if(!nom){$(`[data-neval="${id}"]`).focus();return;}
+    sem().ues.find(u=>u.id===id).evals.push({id:uid(),nom,coef,note:null,date});
+    await sauver(id);
+  });
+
+  $$('[data-suppr-eval]').forEach(b=>b.onclick=async()=>{
+    const id=b.dataset.supprEval, ouvert=ouvertDe(id);
+    sem().ues.forEach(u=>u.evals=u.evals.filter(e=>e.id!==id));
+    await sauver(ouvert);
+  });
+
+  $$('[data-edit-ue]').forEach(b=>b.onclick=()=>ouvrirUE(b.dataset.editUe));
+  $$('[data-add-cartes]').forEach(b=>b.onclick=()=>ouvrirCartes(b.dataset.addCartes));
+  $$('[data-rev-ue]').forEach(b=>b.onclick=()=>lancerRevision(b.dataset.revUe));
+  $$('[data-suppr-carte]').forEach(b=>b.onclick=async()=>{
+    const c=etat.cartes.find(x=>x.id===b.dataset.supprCarte);
+    const ueId=c?c.ueId:null;
+    etat.cartes=etat.cartes.filter(x=>x.id!==b.dataset.supprCarte);
+    await sauver(ueId);
+  });
+
+  $$('[data-suppr-ue]').forEach(b=>b.onclick=async()=>{
+    const id=b.dataset.supprUe;
+    const ue=sem().ues.find(u=>u.id===id);
+    if(!confirm(`Supprimer « ${ue.nom} » et ses ${ue.evals.length} épreuve(s) ?`)) return;
+    sem().ues=sem().ues.filter(u=>u.id!==id);
+    etat.seances=etat.seances.filter(s=>s.ueId!==id);
+    await sauver();
+  });
+}
+const ouvertDe=evalId=>{const u=sem().ues.find(u=>u.evals.some(e=>e.id===evalId));return u?u.id:null;};
+
+async function sauver(rouvrir){
+  const ok=await store.ecrire(etat);
+  if(!ok) toast('Sauvegarde impossible sur cet appareil');
+  rendre();
+  if(rouvrir){
+    const c=$(`.ue[data-id="${rouvrir}"]`);
+    if(c){c.classList.add('open');c.querySelector('.ue-tete').setAttribute('aria-expanded','true');}
+  }
+}
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),2600);}
+
+/* dialogue UE — création et édition */
+function ouvrirUE(id){
+  editionUE=id||null;
+  const ue=id?sem().ues.find(u=>u.id===id):null;
+  $('#d-ue-titre').textContent=ue?'Modifier l\'UE':'Nouvelle UE';
+  $('#f-nom').value=ue?ue.nom:'';
+  $('#f-ects').value=ue?ue.ects:6;
+  $('#f-cible').value=ue?ue.cible:14;
+  $('#f-nature').value=ue?(ue.nature||'mixte'):'quanti';
+  $('#d-ue').showModal(); $('#f-nom').focus();
+}
+$('#b-ue').onclick=()=>ouvrirUE(null);
+$('#f-non').onclick=()=>$('#d-ue').close();
+$('#f-ok').onclick=async()=>{
+  const nom=$('#f-nom').value.trim();
+  if(!nom){$('#f-nom').focus();return;}
+  const champs={nom,ects:Number($('#f-ects').value)||6,
+    cible:Math.max(0,Math.min(20,Number($('#f-cible').value)||14)),nature:$('#f-nature').value};
+  if(editionUE) Object.assign(sem().ues.find(u=>u.id===editionUE),champs);
+  else sem().ues.push({id:uid(),...champs,evals:[]});
+  $('#d-ue').close();
+  await sauver(editionUE);
+  editionUE=null;
+};
+
+/* dialogue séance */
+$('#b-seance').onclick=()=>{
+  if(!sem().ues.length){toast('Ajoute d\'abord une UE');return;}
+  $('#s-ue').innerHTML=sem().ues.map(u=>`<option value="${u.id}">${echap(u.nom)}</option>`).join('');
+  $('#s-date').value=iso(new Date());
+  $('#d-seance').showModal();
+};
+$('#s-non').onclick=()=>$('#d-seance').close();
+$('#s-ok').onclick=async()=>{
+  const d=$('#s-date').value?new Date($('#s-date').value+'T12:00:00').getTime():Date.now();
+  etat.seances.push({id:uid(),semId:etat.actif,ueId:$('#s-ue').value,
+    min:Number($('#s-min').value)||60,quoi:$('#s-quoi').value,ts:d});
+  $('#d-seance').close();
+  await sauver();
+};
+
+/* ---------- saisie en lot des cartes ---------- */
+function ouvrirCartes(ueId){
+  const l=sem().ues;
+  if(!l.length){toast("Ajoute d'abord une UE");return;}
+  $('#c-ue').innerHTML=l.map(u=>`<option value="${u.id}" ${u.id===ueId?'selected':''}>${echap(u.nom)}</option>`).join('');
+  $('#c-txt').value=''; $('#d-cartes').showModal(); $('#c-txt').focus();
+}
+$('#c-non').onclick=()=>$('#d-cartes').close();
+$('#c-ok').onclick=async()=>{
+  const ueId=$('#c-ue').value;
+  const blocs=$('#c-txt').value.split(/\n\s*\n/).map(b=>b.trim()).filter(Boolean);
+  let n=0;
+  blocs.forEach(b=>{
+    const lignes=b.split('\n').map(x=>x.replace(/^\s*[-*]\s*/,'').trim()).filter(Boolean);
+    if(lignes.length<2) return;
+    etat.cartes.push(carteNeuve(ueId,lignes[0],lignes.slice(1).join('\n')));
+    n++;
+  });
+  $('#d-cartes').close();
+  if(!n){toast('Aucune carte reconnue');return;}
+  await sauver(ueId);
+  toast(n+' carte'+(n>1?'s':'')+' ajoutée'+(n>1?'s':''));
+};
+
+/* ---------- session de révision ---------- */
+let session=null;
+function lancerRevision(ueId){
+  const l=[...dues(ueId)];
+  if(!l.length){toast('Aucune carte due');return;}
+  for(let i=l.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[l[i],l[j]]=[l[j],l[i]];}
+  session={file:l.map(c=>c.id),debut:Date.now(),parUE:{},faites:0};
+  $('#revision').classList.add('on'); $('#revision').setAttribute('aria-hidden','false');
+  carteSuivante();
+}
+function carteSuivante(){
+  if(!session||!session.file.length){return finRevision();}
+  const c=etat.cartes.find(x=>x.id===session.file[0]);
+  if(!c){session.file.shift();return carteSuivante();}
+  const ue=etat.semestres.flatMap(x=>x.ues).find(u=>u.id===c.ueId);
+  $('#rev-ue').textContent=ue?ue.nom:'—';
+  $('#rev-reste').textContent=`· ${session.file.length} restante${session.file.length>1?'s':''}`;
+  $('#rev-q').textContent=c.q;
+  $('#rev-r').textContent=c.r; $('#rev-r').hidden=true;
+  $('#rev-voir').hidden=false; $('#rev-notes').hidden=true;
+  $$('#rev-notes button').forEach(b=>{
+    b.querySelector('b').textContent=libelleIntervalle(prochainIntervalle(c,Number(b.dataset.q)));
+  });
+}
+$('#rev-voir').onclick=()=>{
+  $('#rev-r').hidden=false; $('#rev-voir').hidden=true; $('#rev-notes').hidden=false;
+};
+$$('#rev-notes button').forEach(b=>b.onclick=async()=>{
+  const q=Number(b.dataset.q);
+  const c=etat.cartes.find(x=>x.id===session.file[0]);
+  sm2(c,q);
+  session.parUE[c.ueId]=(session.parUE[c.ueId]||0)+1;
+  session.faites++;
+  session.file.shift();
+  if(q<3) session.file.push(c.id);
+  await store.ecrire(etat);
+  carteSuivante();
+});
+$('#rev-stop').onclick=()=>finRevision();
+async function finRevision(){
+  const s=session; session=null;
+  $('#revision').classList.remove('on'); $('#revision').setAttribute('aria-hidden','true');
+  if(!s||!s.faites) return rendre();
+  const total=Math.max(1,Math.round((Date.now()-s.debut)/60000));
+  const somme=Object.values(s.parUE).reduce((a,b)=>a+b,0)||1;
+  Object.entries(s.parUE).forEach(([ueId,n])=>{
+    etat.seances.push({id:uid(),semId:etat.actif,ueId,
+      min:Math.max(1,Math.round(total*n/somme)),quoi:'Rappel actif / cartes',ts:Date.now()});
+  });
+  await sauver();
+  toast(`${s.faites} carte${s.faites>1?'s':''} revue${s.faites>1?'s':''} · ${total} min consignées`);
+}
+$('#b-reviser').onclick=()=>lancerRevision(null);
+document.addEventListener('keydown',e=>{
+  if(!session) return;
+  if(e.key==='Escape') finRevision();
+  else if(e.key===' '&&!$('#rev-voir').hidden){e.preventDefault();$('#rev-voir').click();}
+  else if(['1','2','3','4'].includes(e.key)&&!$('#rev-notes').hidden){
+    $$('#rev-notes button')[Number(e.key)-1].click();
+  }
+});
+
+/* ---------- export : le contrat lu par Claude Code ---------- */
+function paquet(){
+  return {
+    schema:'cockpit-l2', version:VERSION,
+    genereLe:new Date().toISOString(),
+    semestreActif:etat.actif,
+    semestres:etat.semestres.map(s=>{
+      const m=moyenneSemestre(s), E=ectsBilan(s);
+      return {
+        id:s.id, nom:s.nom,
+        moyenne:m===null?null:arrondi(m), cible:arrondi(cibleSemestre(s)),
+        mention:mention(m), semestreValide:m===null?null:m>=SEUIL_SEM,
+        ects:E,
+        ues:s.ues.map(ue=>{
+          const b=bilan(ue);
+          return {
+            id:ue.id, nom:ue.nom, ects:ue.ects, nature:ue.nature||'mixte', cible:ue.cible,
+            moyenneActuelle:b.moyenne===null?null:arrondi(b.moyenne),
+            noteRequisePourLaCible:b.requis===null?null:arrondi(b.requis),
+            noteRequisePourValider:b.requisPourValider===null?null:arrondi(b.requisPourValider),
+            coefficientRestant:b.coefRestant,
+            maximumAtteignable:b.maxAtteignable===null?null:arrondi(b.maxAtteignable),
+            ueAcquiseQuoiQuIlArrive:b.minGaranti!==null&&b.minGaranti>=SEUIL_UE,
+            pointsEnJeu:arrondi(enJeu(ue,s),3),
+            minutes21j:minutesUE(ue.id),
+            cartes:{total:cartesUE(ue.id).length,dues:dues(ue.id).length},
+            evaluations:ue.evals.map(e=>({nom:e.nom,coef:e.coef,note:e.note??null,date:e.date||null}))
+          };
+        })
+      };
+    }),
+    echeances:echeancesAVenir(sem(),12).map(e=>({
+      ue:e.ue.nom, epreuve:e.eval.nom, coef:e.eval.coef, date:e.eval.date, joursRestants:e.jours})),
+    seances:etat.seances.map(s=>{
+      const ue=etat.semestres.flatMap(x=>x.ues).find(u=>u.id===s.ueId);
+      return {semestre:s.semId,ue:ue?ue.nom:null,minutes:s.min,nature:s.quoi,date:iso(s.ts)};
+    }),
+    cartes:etat.cartes.map(c=>{
+      const ue=etat.semestres.flatMap(x=>x.ues).find(u=>u.id===c.ueId);
+      return {ue:ue?ue.nom:null,question:c.q,reponse:c.r,
+        facilite:c.ef,serie:c.n,intervalleJours:c.intervalle,prochaine:c.du,vues:c.vues};
+    }),
+    // état brut, pour pouvoir réimporter après modification par Claude Code
+    _etat:etat
+  };
+}
+$('#b-export').onclick=()=>{
+  const blob=new Blob([JSON.stringify(paquet(),null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`semestre-${etat.actif}-${iso(new Date())}.json`;
+  a.click(); URL.revokeObjectURL(a.href);
+  toast('Export prêt — dépose-le dans data/');
+};
+
+/* ---------- import : Claude Code peut réécrire l'état ---------- */
+$('#b-import').onclick=()=>$('#fichier').click();
+$('#fichier').onchange=async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  try{
+    const d=JSON.parse(await f.text());
+    const brut=d._etat||d;
+    if(!brut||(!brut.semestres&&!brut.ues)) throw new Error('structure inconnue');
+    if(!confirm('Remplacer les données actuelles par ce fichier ?')) return;
+    etat=migrer(brut);
+    await sauver();
+    toast('Import effectué');
+  }catch(err){ toast('Fichier illisible : '+err.message); }
+  finally{ e.target.value=''; }
+};
+
+(async()=>{ etat=migrer(await store.lire()); rendre(); })();
+</script>
+</body>
+</html>
