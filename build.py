@@ -26,6 +26,7 @@ DOCS = [
     ("micro-devoir-blanc-td5.md",           "Devoir blanc — micro", "TD 5 — mardi 3 novembre", "blanc"),
     ("monnaie-financement-carte.md",        "Monnaie et financement", "Chossat Noblot — 6 ECTS, 100 % terminal", "monnaie"),
     ("techniques-financieres-carte.md",     "Techniques financières", "Gaignette — 5 annales corrigées", "tefi"),
+    ("inference-statistique-carte.md",      "Inférence statistique", "Dadda — simulation et tableur", "infstat"),
     ("microeconomie-carte.md",              "Microéconomie",    "Gharbi",         "micro"),
     ("calcul-analyse-couts-carte.md",       "Calcul des coûts", "Huet",           "couts"),
     ("techniques-enquete-carte.md",         "Techniques d'enquête", "Ledoux",     "enquete"),
